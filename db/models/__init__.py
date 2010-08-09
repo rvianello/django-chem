@@ -4,3 +4,6 @@ from django.db.models import *
 # The chemistry-enabled fields.
 from django_chem.db.models.fields import SmilesField
 
+# The Managers
+from django_chem.db.models.manager import SmilesManager
+
