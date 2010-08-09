@@ -2,5 +2,5 @@
 from django.db.models import *
 
 # The chemistry-enabled fields.
-from django_chem.db.models.fields import MoleculeField
+from django_chem.db.models.fields import SmilesField
 

@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
 
-class MoleculeField(Field):
+class SmilesField(Field):
     "The Molecule data type -- represents the chemical structure of a compound"
 
     description = _('Molecule (stored as a canonical-maybe SMILES string)')
@@ -23,9 +23,9 @@ class MoleculeField(Field):
         # first parameter, so this works like normal fields.
         kwargs['verbose_name'] = verbose_name
 
-        super(MoleculeField, self).__init__(**kwargs)
+        super(SmilesField, self).__init__(**kwargs)
 
     def db_type(self, connection):
-        return connection.creation.chem_db_type('MoleculeField')
+        return connection.creation.chem_db_type('SmilesField')
 
     
