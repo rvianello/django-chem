@@ -1,7 +1,10 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
 
-class SmilesField(Field):
+class ChemField(Field):
+    pass
+
+class SmilesField(ChemField):
     "The Molecule data type -- represents the chemical structure of a compound"
 
     description = _('Molecule (stored as a canonical-maybe SMILES string)')

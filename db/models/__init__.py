@@ -5,5 +5,5 @@ from django.db.models import *
 from django_chem.db.models.fields import SmilesField
 
 # The Managers
-from django_chem.db.models.manager import SmilesManager
+from django_chem.db.models.manager import ChemManager
 
