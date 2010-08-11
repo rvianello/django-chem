@@ -18,7 +18,7 @@ class ChemQuery(sql.Query):
     # Overridding the valid query terms.
     query_terms = ALL_TERMS
 
-    compiler = 'ChemSQLCompiler'
+    # compiler = 'ChemSQLCompiler' ? maybe we don't need a specialized compiler. not yet.
 
     #### Methods overridden from the base Query class ####
     def __init__(self, model, where=ChemWhereNode):
