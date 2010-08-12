@@ -29,6 +29,6 @@ class SmilesField(ChemField):
         super(SmilesField, self).__init__(**kwargs)
 
     def db_type(self, connection):
-        return connection.creation.chem_db_type('SmilesField')
+        return connection.ops.chem_db_type('SmilesField')
 
     
