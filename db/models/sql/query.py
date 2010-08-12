@@ -5,7 +5,7 @@ from django_chem.db.models.fields import ChemField
 from django_chem.db.models.sql.where import ChemWhereNode
 
 ALL_TERMS = dict([(x, None) for x in (
-            'contained', 'contains',
+            'contained', 'contains_substructure',
             # ? 'equals', 'exact',
             'mw_gt', 'mw_gte', 'mw_lt', 'mw_lte',
             )])

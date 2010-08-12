@@ -2,6 +2,8 @@ from django.db import connections
 from django.db.models.query import QuerySet, Q
 from django.db.models.query import ValuesQuerySet, ValuesListQuerySet
 
+from django_chem.db.models.sql import ChemQuery #, ChemWhereNode
+
 class ChemQuerySet(QuerySet):
     "The chemistry-aware QuerySet."
 

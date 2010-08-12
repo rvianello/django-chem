@@ -21,9 +21,14 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
         super(RDKitOperations, self).__init__(connection)
 
         self.substructure_operators = {
-            'contains'  : RDKitOperator('@>'),
+            'contains_substructure'  : RDKitOperator('@>'),
             'contained' : RDKitOperator('<@'),
             }
+
+        # Creating a dictionary lookup of all chem terms for the RDKit backend.
+        chem_terms = ['isnull']
+        chem_terms += self.substructure_operators.keys()
+        self.chem_terms = dict([(term, None) for term in chem_terms])
 
         self.molecular_weight = 'mol_amw'
 

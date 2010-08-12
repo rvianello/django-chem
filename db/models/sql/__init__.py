@@ -1,2 +1,2 @@
-from django.contrib.gis.db.models.sql.query import ChemQuery
-from django.contrib.gis.db.models.sql.where import ChemWhereNode
+from django_chem.db.models.sql.query import ChemQuery
+from django_chem.db.models.sql.where import ChemWhereNode

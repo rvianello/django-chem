@@ -7,6 +7,7 @@ class BaseChemOperations(object):
     # fingerprinting_functions = {} ?
     substructure_operators = {}
     # similarity_operators = {}
+    chem_terms = {}
 
     # Quick booleans for the type of this spatial backend, and
     # an attribute for the spatial database version tuple (if applicable)
@@ -43,6 +44,6 @@ class BaseChemOperations(object):
     def chemical_aggregate_sql(self, agg):
         raise NotImplementedError('Aggregate support not implemented for this chemical backend.')
 
-    def chemical_lookup_sql(self, lvalue, lookup_type, value, field):
+    def chem_lookup_sql(self, lvalue, lookup_type, value, field):
         raise NotImplmentedError
 

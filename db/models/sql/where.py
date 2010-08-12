@@ -42,8 +42,8 @@ class ChemWhereNode(WhereNode):
         if isinstance(lvalue, ChemConstraint):
             data, params = lvalue.process(lookup_type, params_or_value, connection)
             # delegate the chem-specific sql to the backend
-            chemical_sql = connection.ops.chemical_lookup_sql(data, lookup_type, 
-                                                              params_or_value, lvalue.field, qn)
+            chemical_sql = connection.ops.chem_lookup_sql(data, lookup_type, 
+                                                          params_or_value, lvalue.field, qn)
             return chemical_sql, params
         else:
             return super(ChemWhereNode, self).make_atom(child, qn, connection)
