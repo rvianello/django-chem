@@ -76,9 +76,18 @@ class SmilesField(ChemField):
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
         if lookup_type in (
-            'contained', 'contains_substructure',
+            'contained', 'contains',
             ):
             return value
 
         raise TypeError("Field has invalid lookup: %s" % lookup_type)
     
+class FingerprintField(ChemField):
+    pass
+
+class BitmapFingerprintField(FingerprintField):
+    pass
+
+class SparseFingerprintField(FingerprintField):
+    pass
+

@@ -21,7 +21,7 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
         super(RDKitOperations, self).__init__(connection)
 
         self.substructure_operators = {
-            'contains_substructure'  : RDKitOperator('@>'),
+            'contains'  : RDKitOperator('@>'),
             'contained' : RDKitOperator('<@'),
             }
 
