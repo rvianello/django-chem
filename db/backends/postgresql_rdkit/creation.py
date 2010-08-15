@@ -2,6 +2,21 @@ from django.db.backends.postgresql.creation import DatabaseCreation
 
 class RDKitCreation(DatabaseCreation):
 
+    def sql_create_model(self, model, style, known_models=set()):
+
+        final_output, pending_references = \
+            super(RDKitCreation, self).sql_create_model(model, style, known_models)
+        from django_chem.db.models.fields import SmilesField
+
+        opts = model._meta
+        molecule_fields = [f for f in opts.local_fields 
+                           if isinstance(f, SmilesField)]
+        qn = self.connection.ops.quote_name
+        for f in molecule_fields:
+            pass
+
+        return final_output, pending_references
+
     def sql_indexes_for_field(self, model, f, style):
         "Return specific index creation SQL for the field."
 
