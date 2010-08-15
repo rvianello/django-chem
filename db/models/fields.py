@@ -5,7 +5,7 @@ from django.db.models.sql.expressions import SQLEvaluator
 class ChemField(Field):
     pass
 
-class SmilesField(ChemField):
+class MoleculeField(ChemField):
     "The Molecule data type -- represents the chemical structure of a compound"
 
     description = _('Molecule (stored as a canonical-maybe SMILES string)')
@@ -27,10 +27,10 @@ class SmilesField(ChemField):
         # first parameter, so this works like normal fields.
         kwargs['verbose_name'] = verbose_name
 
-        super(SmilesField, self).__init__(**kwargs)
+        super(MoleculeField, self).__init__(**kwargs)
 
     def db_type(self, connection):
-        return connection.ops.chem_db_type('SmilesField')
+        return connection.ops.chem_db_type('MoleculeField')
 
     def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
         """
@@ -82,23 +82,6 @@ class SmilesField(ChemField):
 
         raise TypeError("Field has invalid lookup: %s" % lookup_type)
     
-class MolecularWeightAutoField(FloatField):
-    description = _('Automatic MW field associated to chemical structure')
-
-    def __init__(self, smiles_field, verbose_name=None, **kwargs):
-        super(MolecularWeightAutoField, self).__init__(**kwargs)
-        self.editable = False
-        self.auto_created = True
-        self.smiles_field = smiles_field
-        
-    def pre_save(self, model_instance, add):
-        "Returns field's value just before saving."
-        return getattr(model_instance, self.smiles_field.attname)
-
-    def get_db_prep_save(self, value, connection):
-        return connection.ops.molecular_weight(value)
-
-
 class FingerprintField(ChemField):
     pass
 

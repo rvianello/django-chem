@@ -6,11 +6,11 @@ class RDKitCreation(DatabaseCreation):
 
         final_output, pending_references = \
             super(RDKitCreation, self).sql_create_model(model, style, known_models)
-        from django_chem.db.models.fields import SmilesField
+        from django_chem.db.models.fields import MoleculeField
 
         opts = model._meta
         molecule_fields = [f for f in opts.local_fields 
-                           if isinstance(f, SmilesField)]
+                           if isinstance(f, MoleculeField)]
         qn = self.connection.ops.quote_name
         for f in molecule_fields:
             pass

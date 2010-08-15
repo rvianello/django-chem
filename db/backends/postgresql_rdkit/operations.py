@@ -30,21 +30,10 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
         chem_terms += self.substructure_operators.keys()
         self.chem_terms = dict([(term, None) for term in chem_terms])
 
-    def molecular_weight(self, smiles):
-        cursor = self.connection._cursor()
-        try:
-            cursor.execute("SELECT mol_amw( E'%s' );" % smiles)
-            row = cursor.fetchone()
-        finally:
-            # Close out the connection.  See #9437.
-            self.connection.close()
-        return float(row[0])
-
-
     def chem_db_type(self, field_name):
         try:
             return {
-                'SmilesField':     'mol',
+                'MoleculeField':     'mol',
                 }[field_name]
         except KeyError:
             raise NotImplementedError('%s is not implemented for this backend.' 

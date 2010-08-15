@@ -22,7 +22,7 @@ class RDKitIntrospection(DatabaseIntrospection):
         try:
             cursor.execute(oid_sql, ('mol',))
             MOL_TYPE = cursor.fetchone()[0]
-            rdkit_types = { MOL_TYPE : 'SmilesField' }
+            rdkit_types = { MOL_TYPE : 'MoleculeField' }
         finally:
             cursor.close()
 
