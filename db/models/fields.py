@@ -1,5 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields import Field
+from django.db.models.fields import *
 from django.db.models.sql.expressions import SQLEvaluator
 
 class ChemField(Field):
@@ -82,6 +82,23 @@ class SmilesField(ChemField):
 
         raise TypeError("Field has invalid lookup: %s" % lookup_type)
     
+class MolecularWeightAutoField(FloatField):
+    description = _('Automatic MW field associated to chemical structure')
+
+    def __init__(self, smiles_field, verbose_name=None, **kwargs):
+        super(MolecularWeightAutoField, self).__init__(**kwargs)
+        self.editable = False
+        self.auto_created = True
+        self.smiles_field = smiles_field
+        
+    def pre_save(self, model_instance, add):
+        "Returns field's value just before saving."
+        return getattr(model_instance, self.smiles_field.attname)
+
+    def get_db_prep_save(self, value, connection):
+        return connection.ops.molecular_weight(value)
+
+
 class FingerprintField(ChemField):
     pass
 
