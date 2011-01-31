@@ -1,2 +1,9 @@
-sorry, I will soon provide some basic info.
+The goal of this project consists in extending the Django ORM to support
+the development of cheminformatics applications.
+
+The existing code is a quick adaptation of some classes from the Django GIS
+extension and basically represents a proof-of-concept; only a very limited 
+range of the desired functionalities is therefore available (and for a 
+single database backend, the PostgreSQL rdbms with the RDKit cartridge).
+
 
