@@ -8,18 +8,12 @@ class RDKitOperator(ChemOperation):
     def __init__(self, operator):
         super(RDKitOperator, self).__init__(operator=operator)
 
-    def as_sql(self, col):
-        if self.operator != '==': 
-            return super(RDKitOperator, self).as_sql(col)
-
-        return super(RDKitOperator, self).as_sql(col, '%s::mol')
-
-
 
 class RDKitFunction(ChemFunction):
     "For RDKit function calls (e.g., ``)."
     def __init__(self, function, **kwargs):
         super(RDKitFunction, self).__init__(function, **kwargs)
+
 
 class RDKitOperations(DatabaseOperations, BaseChemOperations):
 
