@@ -5,9 +5,16 @@ from django_chem.db.backends.util import ChemOperation, ChemFunction
 #### Classes used in constructing RDKit chemical SQL ####
 class RDKitOperator(ChemOperation):
     "For RDKit operators (e.g. `@>`, `<@`, `#`, `%`, ...)."
-    def __init__(self, operator):
+    def __init__(self, operator, cast=''):
+        self.cast = cast
         super(RDKitOperator, self).__init__(operator=operator)
 
+    #def as_sql(self, chem_col, chemical='%s'):
+    #    sql = super(RDKitOperator, self).as_sql(chem_col, chemical)
+    #    if self.cast: 
+    #        sql = '%s::%s' % (sql, self.cast)
+    #    print sql
+    #    return sql
 
 class RDKitFunction(ChemFunction):
     "For RDKit function calls (e.g., ``)."
@@ -25,7 +32,8 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
         self.substructure_operators = {
             'contains'  : RDKitOperator('@>'),
             'contained' : RDKitOperator('<@'),
-            'exact' : RDKitOperator('@='),
+            'exact'     : RDKitOperator('@='),
+            'matches'   : RDKitOperator('@>', 'qmol'),
             }
 
         # Creating a dictionary lookup of all chem terms for the RDKit backend.
@@ -56,7 +64,9 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
         if lookup_type in self.substructure_operators:
             # Handling a RDKit operator.
             op = self.substructure_operators[lookup_type]
-            return op.as_sql(chem_col)
+            sql = (op.as_sql(chem_col, '%%s::%s' % op.cast)
+                   if op.cast else op.as_sql(chem_col))
+            return sql
         elif lookup_type == 'isnull':
             # Handling 'isnull' lookup type
             return "%s IS %sNULL" % (chem_col, (not value and 'NOT ' or ''))

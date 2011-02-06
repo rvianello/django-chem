@@ -76,7 +76,7 @@ class MoleculeField(ChemField):
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
         if lookup_type in (
-            'contained', 'contains', 'exact',
+            'contained', 'contains', 'exact', 'matches',
             ):
             return value
 
