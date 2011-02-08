@@ -5,16 +5,8 @@ from django_chem.db.backends.util import ChemOperation, ChemFunction
 #### Classes used in constructing RDKit chemical SQL ####
 class RDKitOperator(ChemOperation):
     "For RDKit operators (e.g. `@>`, `<@`, `#`, `%`, ...)."
-    def __init__(self, operator, cast=''):
-        self.cast = cast
+    def __init__(self, operator):
         super(RDKitOperator, self).__init__(operator=operator)
-
-    #def as_sql(self, chem_col, chemical='%s'):
-    #    sql = super(RDKitOperator, self).as_sql(chem_col, chemical)
-    #    if self.cast: 
-    #        sql = '%s::%s' % (sql, self.cast)
-    #    print sql
-    #    return sql
 
 class RDKitFunction(ChemFunction):
     "For RDKit function calls (e.g., ``)."
@@ -29,16 +21,16 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
     def __init__(self, connection):
         super(RDKitOperations, self).__init__(connection)
 
-        self.substructure_operators = {
-            'contains'  : RDKitOperator('@>'),
-            'contained' : RDKitOperator('<@'),
-            'exact'     : RDKitOperator('@='),
-            'matches'   : RDKitOperator('@>', 'qmol'),
+        self.structure_operators = {
+            'contains'  : (RDKitOperator('@>'), '%s::mol'),
+            'contained' : (RDKitOperator('<@'), '%s::mol'),
+            'exact'     : (RDKitOperator('@='), '%s::mol'),
+            'matches'   : (RDKitOperator('@>'), '%s::qmol'),
             }
 
         # Creating a dictionary lookup of all chem terms for the RDKit backend.
         chem_terms = ['isnull']
-        chem_terms += self.substructure_operators.keys()
+        chem_terms += self.structure_operators.keys()
         self.chem_terms = dict([(term, None) for term in chem_terms])
 
     def chem_db_type(self, field_name):
@@ -61,12 +53,10 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
         # Getting the quoted chemistry column.
         chem_col = '%s.%s' % (qn(alias), qn(col))
 
-        if lookup_type in self.substructure_operators:
+        if lookup_type in self.structure_operators:
             # Handling a RDKit operator.
-            op = self.substructure_operators[lookup_type]
-            sql = (op.as_sql(chem_col, '%%s::%s' % op.cast)
-                   if op.cast else op.as_sql(chem_col))
-            return sql
+            op, chemical = self.structure_operators[lookup_type]
+            return op.as_sql(chem_col, chemical)
         elif lookup_type == 'isnull':
             # Handling 'isnull' lookup type
             return "%s IS %sNULL" % (chem_col, (not value and 'NOT ' or ''))
