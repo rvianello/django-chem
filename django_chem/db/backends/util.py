@@ -37,5 +37,5 @@ class ChemFunction(ChemOperation):
                    'result' : result
                    }
         kwargs.update(default)
-        super(SpatialFunction, self).__init__(**kwargs)
+        super(ChemFunction, self).__init__(**kwargs)
 

@@ -26,7 +26,7 @@ class ChemQuerySet(QuerySet):
                            _fields=fields)
 
 
-    ### GeoQuerySet Methods ###
+    ### ChemQuerySet Methods ###
     #def molecular_weight(self, **kwargs):
     #    """
     #    Returns the molecular weight of the chemical structure field in a `molecular_weight` attribute on
@@ -39,9 +39,9 @@ class ChemQuerySet(QuerySet):
 
 class ChemValuesQuerySet(ValuesQuerySet):
     def __init__(self, *args, **kwargs):
-        super(GeoValuesQuerySet, self).__init__(*args, **kwargs)
+        super(ChemValuesQuerySet, self).__init__(*args, **kwargs)
         # This flag tells `resolve_columns` to run the values through
-        # `convert_values`.  This ensures that Geometry objects instead
+        # `convert_values`.  This ensures that Geometry (sic) objects instead
         # of string values are returned with `values()` or `values_list()`.
         self.query.chem_values = True
 
