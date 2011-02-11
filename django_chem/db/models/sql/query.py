@@ -4,10 +4,9 @@ from django.db.models.query import sql
 from django_chem.db.models.fields import ChemField
 from django_chem.db.models.sql.where import ChemWhereNode
 
+# Extend the valid query terms with chem specific ones.
 ALL_TERMS = dict([(x, None) for x in (
-            'contained', 'contains', 'matches',
-            # ? 'equals', 'exact',
-            'mw_gt', 'mw_gte', 'mw_lt', 'mw_lte',
+            'contained', 'matches',
             )])
 ALL_TERMS.update(sql.constants.QUERY_TERMS)
 
