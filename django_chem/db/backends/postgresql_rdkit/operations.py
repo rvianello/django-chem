@@ -63,3 +63,13 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
 
         raise TypeError("Got invalid lookup_type: %s" % repr(lookup_type))
 
+    def computeMolecularWeight(self, molecule):
+        """
+        performs a raw query delegating the computation to the RDKit
+        cartridge
+        """
+        cursor = self.connection.cursor()
+
+        # Data retrieval operation - no commit required
+        cursor.execute("SELECT mol_amw(%s::mol)", [molecule])
+        return float(cursor.fetchone()[0])
