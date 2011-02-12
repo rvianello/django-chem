@@ -63,13 +63,30 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
 
         raise TypeError("Got invalid lookup_type: %s" % repr(lookup_type))
 
-    def computeMolecularWeight(self, molecule):
-        """
-        performs a raw query delegating the computation to the RDKit
-        cartridge
-        """
+    def _build_molecular_descriptor_query(self, func):
         cursor = self.connection.cursor()
+        sql = 'SELECT %s(%%s::mol)' % func
+        def molecular_descriptor_query(molecule):
+            # Data retrieval operation - no commit required
+            cursor.execute(sql, [molecule])
+            return cursor.fetchone()[0]
+        return molecular_descriptor_query
 
-        # Data retrieval operation - no commit required
-        cursor.execute("SELECT mol_amw(%s::mol)", [molecule])
-        return float(cursor.fetchone()[0])
+    def chem_field_eval(self, f):
+        from django_chem.db.models.fields import MolecularWeightField, LogpField, NumberOfAtomsField, NumberOfHeavyAtomsField, NumberOfHbaField, NumberOfHbdField
+        
+        if isinstance(f, MolecularWeightField):
+            return self._build_molecular_descriptor_query('mol_amw')
+        if isinstance(f, LogpField):
+            return self._build_molecular_descriptor_query('mol_logp')
+        if isinstance(f, NumberOfAtomsField):
+            return self._build_molecular_descriptor_query('mol_numatoms')
+        if isinstance(f, NumberOfHeavyAtomsField):
+            return self._build_molecular_descriptor_query('mol_numheavyatoms')
+        if isinstance(f, NumberOfHbaField):
+            return self._build_molecular_descriptor_query('mol_hba')
+        if isinstance(f, NumberOfHbdField):
+            return self._build_molecular_descriptor_query('mol_hbd')
+        
+        raise NotImplementedError('Computation of descriptor field not implemented for this chemical backend.')
+

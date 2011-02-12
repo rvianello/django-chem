@@ -31,6 +31,13 @@ class BaseChemOperations(object):
         """
         raise NotImplementedError
 
+    def chem_field_eval(self, f):
+        """
+        Returns the calculator function for the given chemical descriptor
+        field in this db backend.
+        """
+        raise NotImplementedError('Computation of chemical descriptor fields not implemented for this chemical backend.')
+
     # Chemical SQL Construction
     def chemical_aggregate_sql(self, agg):
         raise NotImplementedError('Aggregate support not implemented for this chemical backend.')
