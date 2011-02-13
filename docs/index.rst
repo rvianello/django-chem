@@ -11,6 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   database_setup
+   project_setup
+   tutorial
+
 Indices and tables
 ==================
 
