@@ -6,6 +6,8 @@ Depending on the database backend, some configuration steps may be required befo
 postgresql-rdkit
 ----------------
 
+The RDKit extension for PostgreSQL must be installed. Please refer to the `RDKit wiki <http://code.google.com/p/rdkit/wiki/BuildingTheCartridge>`_ for detailed instructions.
+
 creation of a chemical database template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
