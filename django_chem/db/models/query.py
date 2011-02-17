@@ -1,8 +1,8 @@
 from django.db import connections
-from django.db.models.query import QuerySet, Q
+from django.db.models.query import QuerySet
 from django.db.models.query import ValuesQuerySet, ValuesListQuerySet
 
-from django_chem.db.models.sql import ChemQuery #, ChemWhereNode
+from django_chem.db.models.sql import ChemQuery
 
 class ChemQuerySet(QuerySet):
     "The chemistry-aware QuerySet."
@@ -34,16 +34,11 @@ class ChemQuerySet(QuerySet):
     #    """
     #    .....
 
-    ### Private API -- Abstracted DRY routines. ###
         
 
 class ChemValuesQuerySet(ValuesQuerySet):
     def __init__(self, *args, **kwargs):
         super(ChemValuesQuerySet, self).__init__(*args, **kwargs)
-        # This flag tells `resolve_columns` to run the values through
-        # `convert_values`.  This ensures that Geometry (sic) objects instead
-        # of string values are returned with `values()` or `values_list()`.
-        self.query.chem_values = True
 
 class ChemValuesListQuerySet(ChemValuesQuerySet, ValuesListQuerySet):
     pass

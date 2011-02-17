@@ -2,6 +2,7 @@ from django.db.models.fields import Field, FieldDoesNotExist
 from django.db.models.sql.constants import LOOKUP_SEP
 from django.db.models.sql.expressions import SQLEvaluator
 from django.db.models.sql.where import Constraint, WhereNode
+
 from django_chem.db.models.fields import ChemField
 
 class ChemConstraint(Constraint):
@@ -26,7 +27,7 @@ class ChemConstraint(Constraint):
 
 class ChemWhereNode(WhereNode):
     """
-    Used to represent the SQL where-clause for spatial databases --
+    Used to represent the SQL where-clause for chemical databases --
     these are tied to the ChemQuery class that created it.
     """
     def add(self, data, connector):
@@ -40,10 +41,13 @@ class ChemWhereNode(WhereNode):
     def make_atom(self, child, qn, connection):
         lvalue, lookup_type, value_annot, params_or_value = child
         if isinstance(lvalue, ChemConstraint):
-            data, params = lvalue.process(lookup_type, params_or_value, connection)
+            data, params = lvalue.process(lookup_type, 
+                                          params_or_value, connection)
+
             # delegate the chem-specific sql to the backend
             chemical_sql = connection.ops.chem_lookup_sql(data, lookup_type, 
-                                                          params_or_value, lvalue.field, qn)
+                                                          params_or_value, 
+                                                          lvalue.field, qn)
             return chemical_sql, params
         else:
             return super(ChemWhereNode, self).make_atom(child, qn, connection)
@@ -52,8 +56,8 @@ class ChemWhereNode(WhereNode):
     def _check_chem_field(cls, opts, lookup):
         """
         Utility for checking the given lookup with the given model options.
-        The lookup is a string either specifying the chemistry field, or a related 
-        lookup on a chemistry field like 'substrate__structure'.
+        The lookup is a string either specifying the chemistry field, 
+        or a related lookup on a chemistry field like 'substrate__structure'.
 
         If a ChemField exists according to the given lookup on the model
         options, it will be returned.  Otherwise returns None.
