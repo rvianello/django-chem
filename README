@@ -6,30 +6,7 @@ extension and basically represents a proof-of-concept; only a very limited
 range of the desired functionalities is therefore available (and for a 
 single database backend, the PostgreSQL rdbms with the RDKit cartridge).
 
-Installation
-------------
-
-Assuming you have the rdkit PostgreSQL cartridge correctly installed, to 
-use django_chem in your own Django based project:
-
-* clone this git repo 
-
-* make it available in the PYTHONPATH or sys.path
-
-* in settings.py, change the ENGINE value in the DATABASES dictionary to::
-
-    'ENGINE': 'django_chem.db.backends.postgresql_rdkit',
-
-* models using `MoleculeField` type fields need to override the default 
-  manager with a `ChemManager` instance like this::
-
-    # please note we import from django_chem.db
-    from django_chem.db import models
-
-    class Molecule(models.Model):
-        name = models.CharField(max_length=200, db_index=True)
-        m = models.MoleculeField(chem_index=True)
-
-        objects = models.ChemManager()
+Draft documentation is available from the 'docs' subdirectory or online
+at http://django-chem.readthedocs.org/
 
 
