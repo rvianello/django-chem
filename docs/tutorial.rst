@@ -20,7 +20,7 @@ Edit ``chembldb_tutorial/chembldb/models.py`` to define the data model::
     # instead of django.db (as one would usually do)
     from django_chem.db import models
     
-    class Compound(model.Model):
+    class Compound(models.Model):
     
         # chembl_id is an ordinary django CharField
         chembl_id = models.CharField(max_length=20, db_index=True)
