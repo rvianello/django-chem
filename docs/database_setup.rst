@@ -27,4 +27,61 @@ creation of the database
 
     $ createdb -T template_rdkit my_chem_db
 
+chemicalite
+-----------
+
+Two SQLite extensions library must be available on the system. Moreover, both
+the installed SQLite library and pysqlite module must be compiled with support
+for loading C extensions at run-time (often turned-off by default for security
+reasons).
+
+pysqlite
+^^^^^^^^
+
+pysqlite 2.5+ is required and must be compiled with support for dynamic 
+loading of C extension. This is most easily accomplished when operating in a
+sandboxed environment (e.g. virtualenv)
+
+Unpack the pysqlite sources in a temporary location:
+
+::
+
+    $ mkdir pysqlite && cd pysqlite
+    $ wget http://pysqlite.googlecode.com/files/pysqlite-2.6.0.tar.gz
+    $ tar zxvf pysqlite-2.6.0.tar.gz
+    $ cd pysqlite-2.6.0
+
+Edit the `setup.cfg` file and comment-out the line that disables extensions
+loading (the last one in this case; also fix the include and library paths, in
+case your SQLite installation is not available in standard locations):
+
+::
+
+    [build_ext]
+    #define=
+    #include_dirs=/usr/local/include
+    #library_dirs=/usr/local/lib
+    libraries=sqlite3
+    #define=SQLITE_OMIT_LOAD_EXTENSION
+
+Build and install:
+
+::
+
+    $ python setup.py install
+
+Test:
+
+::
+
+    $ cd <somewhere out of the build dir>
+    $ python
+    [...]
+    >>> from pysqlite2 import test
+    >>> test.test()
+    [...]
+    Ran 213 tests in 1.616s
+    
+    OK
+    >>> 
 
