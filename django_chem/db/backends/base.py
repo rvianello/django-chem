@@ -11,6 +11,7 @@ class BaseChemOperations(object):
 
     # Quick booleans for the type of this chemical backend
     postgresql_rdkit = False
+    chemicalite = False
 
     molecular_weight = False
 
@@ -22,6 +23,12 @@ class BaseChemOperations(object):
 
     # Constructors
     # ?
+
+    # For quoting column values, rather than columns.
+    def chem_quote_name(self, name):
+        if isinstance(name, unicode):
+            name = name.encode('ascii')
+        return "'%s'" % name
 
     # ChemField operations
     def chem_db_type(self, f):

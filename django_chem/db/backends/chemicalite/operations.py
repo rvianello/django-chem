@@ -1,13 +1,13 @@
 from django.db.backends.sqlite3.base import DatabaseOperations
-from django.contrib.gis.db.backends.base import BaseChemOperations
-from django.contrib.gis.db.backends.util import ChemOperation, ChemFunction
+from django_chem.db.backends.base import BaseChemOperations
+from django_chem.db.backends.util import ChemOperation, ChemFunction
 
 class ChemicaLiteOperator(ChemOperation):
     "For ChemicaLite operators (e.g. `&&`, `~`)."
     def __init__(self, operator):
         super(ChemicaLiteOperator, self).__init__(operator=operator)
 
-class ChemicaLiteFunction(SpatialFunction):
+class ChemicaLiteFunction(ChemFunction):
     "For ChemicaLite function calls."
     def __init__(self, function, **kwargs):
         super(ChemicaLiteFunction, self).__init__(function, **kwargs)
