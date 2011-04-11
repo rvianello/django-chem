@@ -73,7 +73,9 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
         return molecular_descriptor_query
 
     def chem_field_eval(self, f):
-        from django_chem.db.models.fields import MolecularWeightField, LogpField, NumberOfAtomsField, NumberOfHeavyAtomsField, NumberOfHbaField, NumberOfHbdField
+        from django_chem.db.models.fields import \
+            MolecularWeightField, LogpField, NumberOfAtomsField, \
+            NumberOfHeavyAtomsField, NumberOfHbaField, NumberOfHbdField
         
         if isinstance(f, MolecularWeightField):
             return self._build_molecular_descriptor_query('mol_amw')
