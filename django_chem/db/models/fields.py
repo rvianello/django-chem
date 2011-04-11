@@ -17,7 +17,7 @@ class ChemField(Field):
 class MoleculeField(ChemField):
     "The Molecule data type -- represents the chemical structure of a compound"
 
-    description = _('Molecule (stored as a canonical-maybe SMILES string)')
+    description = _('Molecule')
 
     def __init__(self, verbose_name=None, chem_index=False, **kwargs):
         """
