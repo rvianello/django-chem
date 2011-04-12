@@ -1,5 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import connections, router
+from django.db.models import SubfieldBase
 from django.db.models.fields import *
 from django.db.models.sql.expressions import SQLEvaluator
 
@@ -11,7 +12,9 @@ def _connection(model_instance):
     return connections[using]
     
 class ChemField(Field):
-    pass
+
+    def get_placeholder(self, value, connection):
+        return connection.ops.get_chem_placeholder(value, self)
 
 
 class MoleculeField(ChemField):
@@ -90,6 +93,7 @@ class MoleculeField(ChemField):
             return value
 
         raise TypeError("Field has invalid lookup: %s" % lookup_type)
+
 
 class _MolecularDescriptorField(Field):
     

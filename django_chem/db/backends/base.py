@@ -38,6 +38,9 @@ class BaseChemOperations(object):
         """
         raise NotImplementedError
 
+    def get_chem_placeholder(self, value, field):
+        raise NotImplementedError
+
     def chem_field_eval(self, f):
         """
         Returns the calculator function for the given chemical descriptor

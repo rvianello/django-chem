@@ -42,6 +42,9 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
             raise NotImplementedError('%s is not implemented for this backend.' 
                                       % field_name)
 
+    def get_chem_placeholder(self, value, field):
+        return '%s'
+
     def chem_lookup_sql(self, lvalue, lookup_type, value, field, qn):
         """
         Constructs chem SQL from the given lookup value tuple a

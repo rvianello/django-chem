@@ -42,6 +42,20 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
             raise NotImplementedError('%s is not implemented for this backend.' 
                                       % field_name)
 
+    def get_chem_placeholder(self, value, field):
+        if field.get_internal_type() == 'MoleculeField' and value is not None:
+            placeholder = 'mol(%s)'
+            if hasattr(value, 'expression'):
+                # No chem value used for F expression, substitute in
+                # the column name instead.
+                return ( placeholder % '%s.%s' % 
+                         tuple(map(self.quote_name, 
+                                   value.cols[value.expression])) )
+            else:
+                return placeholder
+        else:
+            return '%s'
+
     # note: This was the corresponding method in spatialite
     #
     #def geo_db_type(self, f):
