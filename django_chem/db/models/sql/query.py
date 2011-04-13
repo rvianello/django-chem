@@ -17,7 +17,19 @@ class ChemQuery(sql.Query):
     # Overridding the valid query terms.
     query_terms = ALL_TERMS
 
+    compiler = 'ChemSQLCompiler'
+
     #### Methods overridden from the base Query class ####
     def __init__(self, model, where=ChemWhereNode):
         super(ChemQuery, self).__init__(model, where)
+        self.custom_select = {}
+        self.extra_select_fields = {}
+
+    def clone(self, *args, **kwargs):
+        obj = super(ChemQuery, self).clone(*args, **kwargs)
+        # Customized selection dictionary have to also be added to obj.
+        obj.custom_select = self.custom_select.copy()
+        obj.extra_select_fields = self.extra_select_fields.copy()
+        return obj
+
 

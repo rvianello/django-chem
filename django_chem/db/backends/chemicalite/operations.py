@@ -16,6 +16,10 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
     
     chemicalite = True
 
+    compiler_module = 'django_chem.db.models.sql.compiler'
+
+    select = 'mol_smiles(%s)'
+
     def __init__(self, connection):
         super(DatabaseOperations, self).__init__()
         self.connection = connection

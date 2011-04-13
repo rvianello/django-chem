@@ -4,6 +4,7 @@ class BaseChemOperations(object):
     instantiated by each chemical database backend with the features
     it has.
     """
+
     # fingerprinting_functions = {} ?
     structure_operators = {}
     # similarity_operators = {}
@@ -13,7 +14,8 @@ class BaseChemOperations(object):
     postgresql_rdkit = False
     chemicalite = False
 
-    molecular_weight = False
+    # How the molecule column should be selected.
+    select = None
 
     # Aggregates
     # ?

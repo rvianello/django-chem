@@ -18,6 +18,8 @@ class RDKitOperations(DatabaseOperations, BaseChemOperations):
 
     postgresql_rdkit = True
 
+    compiler_module = 'django_chem.db.models.sql.compiler'
+
     def __init__(self, connection):
         super(RDKitOperations, self).__init__(connection)
 
