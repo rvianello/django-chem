@@ -3,9 +3,12 @@ from django_chem.db.backends.base import BaseChemOperations
 from django_chem.db.backends.util import ChemOperation, ChemFunction
 
 class ChemicaLiteOperator(ChemOperation):
-    "For ChemicaLite operators (e.g. `&&`, `~`)."
-    def __init__(self, operator):
-        super(ChemicaLiteOperator, self).__init__(operator=operator)
+    "For ChemicaLite lookup operators (e.g. contains, contained_in, ...)."
+
+    sql_template = '%(function)s(%(chem_col)s, %(chemical)s)'
+
+    def __init__(self, function):
+        super(ChemicaLiteOperator, self).__init__(function=function)
 
 class ChemicaLiteFunction(ChemFunction):
     "For ChemicaLite function calls."
@@ -21,15 +24,14 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
     select = 'mol_smiles(%s)'
 
     def __init__(self, connection):
-        super(DatabaseOperations, self).__init__()
+        super(ChemicaLiteOperations, self).__init__()
         self.connection = connection
 
         self.structure_operators = {
-            # This is from postgresql_rdkit, leave empty for now
-            #    'contains'  : (RDKitOperator('@>'), '%s::mol'),
-            #    'contained' : (RDKitOperator('<@'), '%s::mol'),
-            #    'exact'     : (RDKitOperator('@='), '%s::mol'),
-            #    'matches'   : (RDKitOperator('@>'), '%s::qmol'),
+            'contains'  : (ChemicaLiteOperator('mol_is_substruct'), 'mol(%s)'),
+            #'contained' : (ChemicaLiteOperator('mol_substruct_of'), 'mol(%s)'),
+            #'exact'     : (ChemicaLiteOperator('@='), 'mol(%s)'),
+            'matches'   : (ChemicaLiteOperator('mol_is_substruct'), 'qmol(%s)'),
             }
 
         # Creating a dictionary lookup of all chem terms for the RDKit backend.
@@ -77,8 +79,8 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
         """
         alias, col, db_type = lvalue
 
-        # Getting the quoted field as `geo_col`.
-        geo_col = '%s.%s' % (qn(alias), qn(col))
+        # Getting the quoted chemistry column.
+        chem_col = '%s.%s' % (qn(alias), qn(col))
 
         if lookup_type in self.structure_operators:
             op, chemical = self.structure_operators[lookup_type]
