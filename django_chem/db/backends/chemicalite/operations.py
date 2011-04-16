@@ -30,7 +30,7 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
         self.structure_operators = {
             'contains'  : (ChemicaLiteOperator('mol_is_substruct'), 'mol(%s)'),
             'contained' : (ChemicaLiteOperator('mol_substruct_of'), 'mol(%s)'),
-            #'exact'     : (ChemicaLiteOperator('@='), 'mol(%s)'),
+            'exact'     : (ChemicaLiteOperator('mol_same'), 'mol(%s)'),
             'matches'   : (ChemicaLiteOperator('mol_is_substruct'), 'qmol(%s)'),
             }
 
