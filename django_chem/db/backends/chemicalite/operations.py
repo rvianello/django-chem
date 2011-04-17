@@ -10,6 +10,12 @@ class ChemicaLiteOperator(ChemOperation):
     def __init__(self, function):
         super(ChemicaLiteOperator, self).__init__(function=function)
 
+class ChemicaLiteSignOperator(ChemOperation):
+    "For ChemicaLite signature lookup operators."
+
+    def __init__(self, operator):
+        super(ChemicaLiteSignOperator, self).__init__(operator=operator)
+
 class ChemicaLiteFunction(ChemFunction):
     "For ChemicaLite function calls."
     def __init__(self, function, **kwargs):
@@ -32,6 +38,14 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
             'contained' : (ChemicaLiteOperator('mol_substruct_of'), 'mol(%s)'),
             'exact'     : (ChemicaLiteOperator('mol_same'), 'mol(%s)'),
             'matches'   : (ChemicaLiteOperator('mol_is_substruct'), 'qmol(%s)'),
+            'signcontains'  : (ChemicaLiteSignOperator('>='), 
+                               'mol_signature(mol(%s))'),
+            'signcontained' : (ChemicaLiteSignOperator('<='), 
+                               'mol_signature(mol(%s))'),
+            'signexact'     : (ChemicaLiteSignOperator('=='), 
+                               'mol_signature(mol(%s))'),
+            'sigmatches'   : (ChemicaLiteSignOperator('>='), 
+                              'mol_signature(qmol(%s))'),
             }
 
         # Creating a dictionary lookup of all chem terms for the RDKit backend.

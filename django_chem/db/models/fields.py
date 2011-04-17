@@ -1,6 +1,10 @@
+import sys
 from django.utils.translation import ugettext_lazy as _
 from django.db import connections, router
 from django.db.models import SubfieldBase
+from django.db.models import Model as _DjangoModel
+from django.db.models import ForeignKey as _ForeignKey
+from django.db.models import DO_NOTHING as _DO_NOTHING
 from django.db.models.fields import *
 from django.db.models.sql.expressions import SQLEvaluator
 
@@ -16,6 +20,47 @@ class ChemField(Field):
     def get_placeholder(self, value, connection):
         return connection.ops.get_chem_placeholder(value, self)
 
+class _MoleculeSignatureField(ChemField):
+    """
+    Binary signature of a molecular structure. Only used by the ChemicaLite
+    backend for structural indexing and lookup ops.
+    """
+    
+    def __init__(self, verbose_name=None, **kwargs):
+        super(_MoleculeSignatureField, self).__init__(**kwargs)
+        self.chem_index = False
+
+    def db_type(self, connection):
+        return None
+
+    def get_prep_lookup(self, lookup_type, value):
+        "Perform preliminary non-db specific lookup checks and conversions"
+        if lookup_type in (
+            'signcontained', 'signcontains', 'signexact', 'sigmatches',
+            ):
+            return value
+
+        raise TypeError("Field has invalid lookup: %s" % lookup_type)
+
+    def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
+        """
+        Prepare for the database lookup, and return any parameters
+        necessary for the query. 
+        """
+        if not prepared:
+            value = self.get_prep_lookup(lookup_type, value)
+        if lookup_type in connection.ops.chem_terms:
+            # special case for isnull lookup
+            if lookup_type == 'isnull':
+                return []
+            # let's try a minimal approach for now
+            elif isinstance(value, (tuple, list)):
+                return value
+            else:
+                return [value,]
+        else:
+            raise ValueError('%s is not a valid chem lookup for %s.' %
+                             (lookup_type, self.__class__.__name__))
 
 class MoleculeField(ChemField):
     "The Molecule data type -- represents the chemical structure of a compound"
@@ -43,6 +88,36 @@ class MoleculeField(ChemField):
 
     def db_type(self, connection):
         return connection.ops.chem_db_type('MoleculeField')
+
+    def contribute_to_class(self, cls, name):
+        super(MoleculeField, self).contribute_to_class(cls, name)
+        if self.chem_index:
+            index_model_name = ('StrIdx%s%s' % 
+                                (cls._meta.object_name, 
+                                 self.name[0].upper()+self.name[1:]))
+            module = sys.modules[cls.__module__]
+            if index_model_name not in dir(module):
+                bases = (_DjangoModel,)
+                class Meta:
+                    app_label = cls._meta.app_label
+                    db_table = ('str_idx_%s_%s' % 
+                                (cls._meta.db_table, self.column))
+                    db_tablespace = cls._meta.db_tablespace
+                    managed = False
+                attrs = {
+                    '__module__' : cls.__module__,
+                    'Meta' : Meta,
+                    'structure' : 
+                    _ForeignKey(cls._meta.object_name,
+                                db_column='id', # instead of structure_id
+                                related_name='%s_stridx' % self.attname,
+                                on_delete=_DO_NOTHING # triggers exist 
+                                ),
+                    's' : _MoleculeSignatureField()
+                    }
+                
+                setattr(module, index_model_name, 
+                        type(index_model_name, bases, attrs))
 
     def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
         """

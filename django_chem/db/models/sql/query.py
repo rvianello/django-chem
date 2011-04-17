@@ -7,6 +7,8 @@ from django_chem.db.models.sql.where import ChemWhereNode
 # Extend the valid query terms with chem specific ones.
 ALL_TERMS = dict([(x, None) for x in (
             'contained', 'matches',
+             # Only used by ChemicaLite
+            'signcontained', 'signcontains', 'signexact', 'sigmatches',
             )])
 ALL_TERMS.update(sql.constants.QUERY_TERMS)
 
