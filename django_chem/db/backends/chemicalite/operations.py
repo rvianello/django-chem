@@ -33,6 +33,13 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
         super(ChemicaLiteOperations, self).__init__()
         self.connection = connection
 
+        self.stridx_lookup = {
+            'contains'  : 's__signcontains',
+            'contained' : 's__signcontained',
+            'exact'     : 's__signexact',
+            'matches'   : 's__signmatches',
+            }
+
         self.structure_operators = {
             'contains'  : (ChemicaLiteOperator('mol_is_substruct'), 'mol(%s)'),
             'contained' : (ChemicaLiteOperator('mol_substruct_of'), 'mol(%s)'),

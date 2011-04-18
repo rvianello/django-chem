@@ -97,6 +97,7 @@ class MoleculeField(ChemField):
                                  self.name[0].upper()+self.name[1:]))
             module = sys.modules[cls.__module__]
             if index_model_name not in dir(module):
+                self.stridx_attname = 'stridx_%s' % self.attname
                 bases = (_DjangoModel,)
                 class Meta:
                     app_label = cls._meta.app_label
@@ -110,7 +111,7 @@ class MoleculeField(ChemField):
                     'structure' : 
                     _ForeignKey(cls._meta.object_name,
                                 db_column='id', # instead of structure_id
-                                related_name='%s_stridx' % self.attname,
+                                related_name=self.stridx_attname,
                                 on_delete=_DO_NOTHING # triggers exist 
                                 ),
                     's' : _MoleculeSignatureField()
