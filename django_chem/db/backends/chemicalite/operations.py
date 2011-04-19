@@ -51,7 +51,7 @@ class ChemicaLiteOperations(DatabaseOperations, BaseChemOperations):
                                'mol_signature(mol(%s))'),
             'signexact'     : (ChemicaLiteSignOperator('=='), 
                                'mol_signature(mol(%s))'),
-            'sigmatches'   : (ChemicaLiteSignOperator('>='), 
+            'signmatches'   : (ChemicaLiteSignOperator('>='), 
                               'mol_signature(qmol(%s))'),
             }
 

@@ -36,7 +36,7 @@ class _MoleculeSignatureField(ChemField):
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
         if lookup_type in (
-            'signcontained', 'signcontains', 'signexact', 'sigmatches',
+            'signcontained', 'signcontains', 'signexact', 'signmatches',
             ):
             return value
 
