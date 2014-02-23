@@ -1,6 +1,6 @@
 The project consists in a customization/extension of the Django ORM which is intended to support the development of cheminformatics applications.
 
-The existing code is a quick adaptation of some classes from the Django GIS extension and mainly represents a proof-of-concept. Supported backends are currently PostgreSQL (via RDKit's cartridge) and - to a lesser extent - SQLite (via ChemicaLite). Only a limited range of the desired functionality is currently implemented. The available API supports the storage of a molecular structures and structural searches (exact and substructure). 
+Code is undergoing a major rewrite.
 
 Draft documentation is available from the 'docs' subdirectory or online
 at http://django-chem.readthedocs.org/
