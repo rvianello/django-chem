@@ -1,8 +1,6 @@
 The project consists in a customization/extension of the Django ORM which is intended to support the development of cheminformatics applications.
 
-Code is undergoing a major rewrite.
+*** Code is undergoing a major rewrite. ***
 
-Draft documentation is available from the 'docs' subdirectory or online
-at http://django-chem.readthedocs.org/
 
 
