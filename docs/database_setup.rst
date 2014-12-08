@@ -18,7 +18,7 @@ creation of a chemical database template
     # Allows non-superusers the ability to create from this template
     $ psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_rdkit';"
     # Loading the RDKit cartridge
-    $ psql -d template_rdkit -f `pg_config --sharedir`/contrib/rdkit.sql
+    $ psql -d template_rdkit -c "CREATE EXTENSION rdkit"
 
 creation of the database
 ^^^^^^^^^^^^^^^^^^^^^^^^
