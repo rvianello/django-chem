@@ -1,6 +1,6 @@
 from django.utils.six import with_metaclass
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import SubfieldBase
+from django.db.models import SubfieldBase, Lookup, Transform
 from django.db.models.fields import *
 
 from rdkit import Chem
@@ -52,13 +52,93 @@ class MoleculeField(with_metaclass(SubfieldBase, Field)):
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
         if lookup_type in (
-            'contained', 'contains', 'exact', 'matches',
+                'hassubstruct', 'issubstruct', 'exact',
+                'amw', 'logp', 
             ):
             return value
         raise TypeError("Field has invalid lookup: %s" % lookup_type)
 
     # this will be probably needed.
-    def get_db_prep_lookup(lookup_type, value, connection, prepared=False):
-        if not prepared:
-            value = self.get_prep_lookup(lookup_type, value)
-        return value
+    #def get_db_prep_lookup(lookup_type, value, connection, prepared=False):
+    #    if not prepared:
+    #        value = self.get_prep_lookup(lookup_type, value)
+    #    return value
+
+
+###############################################################
+# MoleculeField lookup operations, substruct and exact searches
+
+class HasSubstruct(Lookup):
+
+    lookup_name = 'hassubstruct'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s @> %s' % (lhs, rhs), params
+
+MoleculeField.register_lookup(HasSubstruct)
+
+
+class IsSubstruct(Lookup):
+
+    lookup_name = 'issubstruct'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s <@ %s' % (lhs, rhs), params
+
+MoleculeField.register_lookup(IsSubstruct)
+
+
+class SameStructure(Lookup):
+
+    lookup_name = 'exact'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s @= %s' % (lhs, rhs), params
+
+MoleculeField.register_lookup(SameStructure)
+
+
+##########################################
+# MoleculeField transforms and descriptors
+
+class MolAMW(Transform):
+
+    lookup_name = 'amw'
+
+    def as_sql(self, qn, connection):
+        lhs, params = qn.compile(self.lhs)
+        return "mol_amw(%s)" % lhs, params
+
+    @property
+    def output_field(self):
+        return FloatField()
+
+MoleculeField.register_lookup(MolAMW)
+
+
+class MolLogP(Transform):
+
+    lookup_name = 'logp'
+
+    def as_sql(self, qn, connection):
+        lhs, params = qn.compile(self.lhs)
+        return "mol_logp(%s)" % lhs, params
+
+    @property
+    def output_field(self):
+        return FloatField()
+
+MoleculeField.register_lookup(MolLogP)
+
+
+
+
