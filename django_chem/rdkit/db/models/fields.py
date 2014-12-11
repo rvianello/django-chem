@@ -1,9 +1,12 @@
+from django.utils.six import with_metaclass
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import SubfieldBase
 from django.db.models.fields import *
 
+from rdkit import Chem
 from rdkit.Chem.rdchem import Mol
 
-class MoleculeField(Field):
+class MoleculeField(with_metaclass(SubfieldBase, Field)):
 
     description = _("Molecule")
 
@@ -22,28 +25,29 @@ class MoleculeField(Field):
             kwargs['chem_index'] = self.chem_index
         return name, path, args, kwargs
 
-    """
     def to_python(self, value):
         # consider setting the SubfieldBase metaclass
 
         if isinstance(value, Mol):
             return value
 
-        # The string case.
-        # smiles? ctab?
-        raise ValidationError("Invalid input for a Mol instance")
-        
-        #return a Molecule instantiated from the string
+        # The string case. 
+        value = Chem.MolFromSmiles(value)
+        if not value:
+            raise ValidationError("Invalid input for a Mol instance")
+        return value
 
     def get_prep_value(self, value):
         # convert the Molecule instance to the value used by the 
         # db driver
-
-    def get_db_prep_value(self, value, connection, prepared=False):
-        value = super(BinaryField, self).get_db_prep_value(value, connection, prepared)
-        if value is not None:
-            return connection.Database.Binary(value)
+        if isinstance(value, Mol):
+            return Chem.MolToSmiles(value, isomericSmiles=True, canonical=False)
+            
         return value
+
+    # don't reimplement db-specific preparation of query values for now
+    # def get_db_prep_value(self, value, connection, prepared=False):
+    #    return value
 
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
@@ -51,8 +55,10 @@ class MoleculeField(Field):
             'contained', 'contains', 'exact', 'matches',
             ):
             return value
-
         raise TypeError("Field has invalid lookup: %s" % lookup_type)
 
-
-    """
+    # this will be probably needed.
+    def get_db_prep_lookup(lookup_type, value, connection, prepared=False):
+        if not prepared:
+            value = self.get_prep_lookup(lookup_type, value)
+        return value
