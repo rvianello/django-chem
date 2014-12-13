@@ -6,25 +6,28 @@ from django.db.models.fields import *
 from rdkit import Chem
 from rdkit.Chem.rdchem import Mol
 
-class MoleculeField(with_metaclass(SubfieldBase, Field)):
-
-    description = _("Molecule")
+class ChemField(Field):
 
     def __init__(self, verbose_name=None, chem_index=True, *args, **kwargs):
         self.chem_index = chem_index
         kwargs['verbose_name'] = verbose_name
-        super(MoleculeField, self).__init__(*args, **kwargs)
-    
-    def db_type(self, connection):
-        return 'mol'
+        super(ChemField, self).__init__(*args, **kwargs)
     
     def deconstruct(self):
-        name, path, args, kwargs = super(MoleculeField, self).deconstruct()
+        name, path, args, kwargs = super(ChemField, self).deconstruct()
         # include chem_index if not the default value.
         if self.chem_index is not True:
             kwargs['chem_index'] = self.chem_index
         return name, path, args, kwargs
 
+
+class MoleculeField(with_metaclass(SubfieldBase, ChemField)):
+
+    description = _("Molecule")
+
+    def db_type(self, connection):
+        return 'mol'
+    
     def to_python(self, value):
         # consider setting the SubfieldBase metaclass
 

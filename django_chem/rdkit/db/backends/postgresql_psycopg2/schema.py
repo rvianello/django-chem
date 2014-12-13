@@ -9,11 +9,11 @@ class DatabaseSchemaEditor(Psycopg2SchemaEditor):
         self.chem_sql = []
 
     def column_sql(self, model, field, include_default=False):
-        from django_chem.rdkit.db.models.fields import MoleculeField
+        from django_chem.rdkit.db.models.fields import ChemField
 
         column_sql = super(DatabaseSchemaEditor, self).column_sql(model, field, include_default)
 
-        if not isinstance(field, MoleculeField):
+        if not isinstance(field, ChemField):
             return column_sql
 
         if field.chem_index:

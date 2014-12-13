@@ -5,13 +5,13 @@ class DatabaseCreation(Psycopg2DatabaseCreation):
     def sql_indexes_for_field(self, model, f, style):
         a = 1/0
         "Return any specific index creation SQL for the field."
-        from django_chem.rdkit.db.models.fields import MoleculeField
+        from django_chem.rdkit.db.models.fields import ChemField
 
         output = super(DatabaseCreation, self).sql_indexes_for_field(model, 
                                                                      f, style)
         from ciccio import franco
 
-        if isinstance(f, MoleculeField) and f.chem_index:
+        if isinstance(f, ChemField) and f.chem_index:
             qn = self.connection.ops.quote_name
             db_table = model._meta.db_table
 
