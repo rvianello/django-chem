@@ -51,10 +51,12 @@ class MoleculeField(with_metaclass(SubfieldBase, Field)):
 
     def get_prep_lookup(self, lookup_type, value):
         "Perform preliminary non-db specific lookup checks and conversions"
-        if lookup_type in (
-                'hassubstruct', 'issubstruct', 'exact',
-                'amw', 'logp', 
-            ):
+        supported_lookup_types = (
+            ['hassubstruct', 'issubstruct', 'exact',] +
+            _FLOAT_MOL_DESCRIPTORS +
+            _INTEGER_MOL_DESCRIPTORS
+        )
+        if lookup_type in supported_lookup_types:
             return value
         raise TypeError("Field has invalid lookup: %s" % lookup_type)
 
@@ -110,34 +112,80 @@ MoleculeField.register_lookup(SameStructure)
 ##########################################
 # MoleculeField transforms and descriptors
 
-class MolAMW(Transform):
+class DescriptorTransform(Transform):
 
-    lookup_name = 'amw'
+    descriptor_name = None
 
     def as_sql(self, qn, connection):
         lhs, params = qn.compile(self.lhs)
-        return "mol_amw(%s)" % lhs, params
+        return "mol_%s(%s)" % (self.descriptor_name, lhs), params
+    
+
+class IntegerDescriptor(DescriptorTransform):
+
+    @property
+    def output_field(self):
+        return IntegerField()
+
+
+_INTEGER_MOL_DESCRIPTORS = [
+    'hba', 
+    'hbd',
+    'numatoms',
+    'numheavyatoms',
+    'numrotatablebonds',
+    'numheteroatoms',
+    'numrings',
+    'numaromaticrings',
+    'numaliphaticrings',
+    'numsaturatedrings',
+    'numaromaticheterocycles',
+    'numaliphaticheterocycles',
+    'numsaturatedheterocycles',
+    'numaromaticcarbocycles',
+    'numaliphaticcarbocycles',
+    'numsaturatedcarbocycles',
+]
+
+
+for descr in _INTEGER_MOL_DESCRIPTORS:
+    
+    transform = type(
+        'Mol{0}'.format(descr.upper()),
+        (IntegerDescriptor,),
+        { 'lookup_name': descr, 'descriptor_name': descr, },
+    )
+
+    MoleculeField.register_lookup(transform)
+
+
+class FloatDescriptor(DescriptorTransform):
 
     @property
     def output_field(self):
         return FloatField()
 
-MoleculeField.register_lookup(MolAMW)
+
+_FLOAT_MOL_DESCRIPTORS = [
+    'amw',
+    'logp',
+    'tpsa',
+    'fractioncsp3',
+    'chi0v', 'chi1v', 'chi2v', 'chi3v', 'chi5v',
+    'chi0n', 'chi1n', 'chi2n', 'chi3n', 'chi5n',
+    'kappa1', 'kappa2', 'kappa3', 'kappa4',
+]
 
 
-class MolLogP(Transform):
+for descr in _FLOAT_MOL_DESCRIPTORS:
+    
+    transform = type(
+        'Mol{0}'.format(descr.upper()),
+        (FloatDescriptor,),
+        { 'lookup_name': descr, 'descriptor_name': descr, },
+    )
 
-    lookup_name = 'logp'
-
-    def as_sql(self, qn, connection):
-        lhs, params = qn.compile(self.lhs)
-        return "mol_logp(%s)" % lhs, params
-
-    @property
-    def output_field(self):
-        return FloatField()
-
-MoleculeField.register_lookup(MolLogP)
+    MoleculeField.register_lookup(transform)
 
 
 
