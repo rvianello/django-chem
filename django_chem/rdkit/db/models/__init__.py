@@ -4,5 +4,5 @@ from django.db.models import *
 # future -> from django_chem.rdkit.db.models.aggregates import *  # NOQA
 
 from django_chem.rdkit.db.models.fields import (
-    MoleculeField,
+    MoleculeField, BfpField, SfpField, 
 )

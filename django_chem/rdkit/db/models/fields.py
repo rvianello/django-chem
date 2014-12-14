@@ -4,7 +4,8 @@ from django.db.models import SubfieldBase, Lookup, Transform
 from django.db.models.fields import *
 
 from rdkit import Chem
-from rdkit.Chem.rdchem import Mol
+from rdkit.Chem import Mol
+from rdkit.DataStructs import ExplicitBitVect, SparseIntVect
 
 class ChemField(Field):
 
@@ -20,6 +21,9 @@ class ChemField(Field):
             kwargs['chem_index'] = self.chem_index
         return name, path, args, kwargs
 
+
+##########################################
+# Molecule Field
 
 class MoleculeField(with_metaclass(SubfieldBase, ChemField)):
 
@@ -189,6 +193,93 @@ for descr in _FLOAT_MOL_DESCRIPTORS:
     )
 
     MoleculeField.register_lookup(transform)
+
+
+########################################################
+# Binary Fingerprint Field
+
+class BfpField(with_metaclass(SubfieldBase, ChemField)):
+
+    description = _("Binary Fingerprint")
+
+    def db_type(self, connection):
+        return 'bfp'
+    
+    #def to_python(self, value):
+    #    return value
+
+    #def get_prep_value(self, value):
+    #    return value
+
+    def get_prep_lookup(self, lookup_type, value):
+        if lookup_type in ['tanimoto', 'dice']:
+            return value
+        raise TypeError("Field has invalid lookup: %s" % lookup_type)
+
+    #def get_db_prep_lookup(lookup_type, value, connection, prepared=False):
+    #    if not prepared:
+    #        value = self.get_prep_lookup(lookup_type, value)
+    #    return value
+
+
+########################################################
+# Sparse Integer Vector Fingerprint Field
+
+class SfpField(with_metaclass(SubfieldBase, ChemField)):
+
+    description = _("Sparse Integer Vector Fingerprint")
+
+    def db_type(self, connection):
+        return 'sfp'
+    
+    #def to_python(self, value):
+    #    return value
+
+    #def get_prep_value(self, value):
+    #    return value
+
+    def get_prep_lookup(self, lookup_type, value):
+        if lookup_type in ['tanimoto', 'dice']:
+            return value
+        raise TypeError("Field has invalid lookup: %s" % lookup_type)
+
+    #def get_db_prep_lookup(lookup_type, value, connection, prepared=False):
+    #    if not prepared:
+    #        value = self.get_prep_lookup(lookup_type, value)
+    #    return value
+
+
+####################################################################
+# Fingerprint Fields lookup operations, similarity searches
+
+class TanimotoSimilar(Lookup):
+
+    lookup_name = 'tanimoto'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s %% %s' % (lhs, rhs), params
+
+BfpField.register_lookup(TanimotoSimilar)
+SfpField.register_lookup(TanimotoSimilar)
+
+
+class DiceSimilar(Lookup):
+
+    lookup_name = 'dice'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s # %s' % (lhs, rhs), params
+
+BfpField.register_lookup(DiceSimilar)
+SfpField.register_lookup(DiceSimilar)
+
+
 
 
 
