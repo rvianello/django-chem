@@ -1,6 +1,6 @@
 The project consists in a customization/extension of the Django ORM which is intended to support the development of cheminformatics applications.
 
-*** Code is undergoing a major rewrite. ***
+*** This project is no longer developed. If you are interested in using the RDKit toolkit with django please look at the django-rdkit project ***
 
 
 
